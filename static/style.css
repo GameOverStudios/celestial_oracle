@@ -1,0 +1,101 @@
+/* Para navegadores baseados em WebKit (Chrome, Safari, etc.) */
+::-webkit-scrollbar {
+  width: 8px; /* Largura vertical */
+  height: 8px; /* Largura horizontal */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.5); /* Cor do "thumb" (parte que se move) */
+  border-radius: 10px; /* Bordas arredondadas */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 100, 100, 0.8); /* Cor quando passar o mouse */
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1); /* Cor do "track" (parte de fundo) */
+  border-radius: 10px; /* Bordas arredondadas */
+}
+
+/* Para navegadores que suportam scrollbar-gutter */
+html {
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Para Firefox (usando scrollbar-width e scrollbar-color) */
+body {
+  scrollbar-width: thin; /* Deixa a barra de rolagem fina */
+  scrollbar-color: rgba(100, 100, 100, 0.5) rgba(0, 0, 0, 0.1); /* Cor do thumb e do track */
+}
+
+html, body {
+  margin: 0;
+  background: #32333b;
+  height: 100vh;
+  width: 100vw; /* Corrigido para 100% da largura da janela */
+  font-family: sans-serif;
+  font-size: 0.9rem;
+}
+
+.container {
+  padding: 40px;
+  display: flex;
+  height: 100vh;
+  width: 100vw; /* Corrigido para 100% da largura da janela */
+  flex-flow: column; /* Exibe o menu acima do gráfico */
+  box-sizing: border-box; /* Inclui o padding dentro das dimensões */
+  align-items: center;
+}
+
+.graph {  
+  width: 100vw; /* Usa 100% da largura da viewport */
+  height: 100vh; /* Usa 100% da altura da viewport */
+}
+
+.menu {
+  margin-bottom: 20px; /* Espaço entre o menu e o gráfico */
+}
+
+.visualization {
+  display: flex;
+  flex-flow: row wrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+.wrapper {
+  display: none; /* Oculta todas as visualizações inicialmente */
+  flex-flow: column wrap;
+  margin: 10px;
+  width: 100vw;
+  height: 100vh;
+}
+
+.wrapper:hover .caption {
+  visibility: visible;
+  opacity: 1;
+}
+
+.caption {
+  color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  height: 50px;
+  transition: all 0.4s ease-out;
+}
+
+.label {
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.node {
+  cursor: pointer;
+}

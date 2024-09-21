@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árvore Horizontal Interativa</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            background-color: #333;
+            color: #fff;
+        }
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+        .node text {
+            font: 12px sans-serif;
+            fill: #fff;
+        }
+        svg {
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+    <div id="tree-container"></div>
+
+    <script>
+        // Configurações para presets
+        const config = {
+            node: {
+                circleFill: "#fff",
+                circleStroke: "steelblue",
+                circleStrokeWidth: 3,
+                textFont: "12px sans-serif",
+                textFill: "#fff",
+            },
+            svg: {
+                backgroundColor: "#333",
+                zoomScaleExtent: [0.5, 2],
+            }
+        };
+
+        async function fetchData() {
+            const response = await fetch('/categorias_json');
+            const data = await response.json();
+            return data;
+        }
+
+        function renderTree(data) {
+            const root = d3.hierarchy(data);
+            const width = window.innerWidth; // Largura automática
+            const dx = 10;
+            const dy = width / (root.height + 1);
+            const tree = d3.tree().nodeSize([dx, dy]);
+
+            // Inicializa os nós e mantém todos abertos
+            root.each(d => {
+                d._children = d.children; // Armazena os filhos
+            });
+
+            const update = () => {
+                tree(root);
+
+                let x0 = Infinity;
+                let x1 = -x0;
+                root.each(d => {
+                    if (d.x > x1) x1 = d.x;
+                    if (d.x < x0) x0 = d.x;
+                });
+
+                const height = x1 - x0 + dx * 2;
+
+                const svg = d3.create("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("viewBox", [-dy / 3, x0 - dx, width, height])
+                    .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;")
+                    .call(d3.zoom().scaleExtent(config.svg.zoomScaleExtent).on("zoom", (event) => {
+                        svg.attr("transform", event.transform);
+                    }));
+
+                svg.append("g")
+                    .attr("fill", "none")
+                    .attr("stroke", "#555")
+                    .attr("stroke-opacity", 0.4)
+                    .attr("stroke-width", 1.5)
+                    .selectAll()
+                    .data(root.links())
+                    .join("path")
+                    .attr("d", d3.linkHorizontal()
+                        .x(d => d.y)
+                        .y(d => d.x));
+
+                const node = svg.append("g")
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-width", 3)
+                    .selectAll()
+                    .data(root.descendants())
+                    .join("g")
+                    .attr("transform", d => `translate(${d.y},${d.x})`)
+                    .on("click", (event, d) => {
+                        // Alterna entre abrir e fechar os filhos
+                        if (d.children) {
+                            d._children = d.children; // Armazena filhos
+                            d.children = null; // Fecha o nó
+                        } else {
+                            d.children = d._children; // Abre o nó
+                            d._children = null; // Limpa a referência de filhos
+                        }
+                        update(); // Re-renderiza a árvore
+                        event.stopPropagation(); // Evita que o clique suba para nós pais
+                    });
+
+                node.append("circle")
+                    .attr("fill", d => d.children || d._children ? config.node.circleStroke : "#999")
+                    .attr("stroke", config.node.circleStroke)
+                    .attr("stroke-width", config.node.circleStrokeWidth)
+                    .attr("r", 2.5);
+
+                node.append("text")
+                    .attr("dy", "0.31em")
+                    .attr("x", d => (d.children || d._children) ? -6 : 6)
+                    .attr("text-anchor", d => (d.children || d._children) ? "end" : "start")
+                    .text(d => d.data.name)
+                    .attr("fill", config.node.textFill);
+
+                document.getElementById("tree-container").innerHTML = ""; // Limpa o SVG anterior
+                document.getElementById("tree-container").appendChild(svg.node());
+            };
+
+            update();
+        }
+
+        // Chama a função para renderizar a árvore
+        fetchData().then(renderTree);
+
+        // Re-renderiza a árvore ao redimensionar a janela
+        window.addEventListener("resize", () => {
+            fetchData().then(renderTree);
+        });
+    </script>
+</body>
+</html>

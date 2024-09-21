@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Celestial Oracle</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="menu">
+
+      <select id="visualization-select">
+        <option value="tree">Tree Layout</option>
+        <option value="cluster">Cluster Layout</option>
+        <option value="map">map Layout</option>
+        <option value="pack">Pack Layout</option>
+        <option value="partition">Partition Layout</option>
+        <option value="sunburst">Sunburst Layout</option>
+      </select>
+    </div>
+    <div class="visualization">
+      <div class="wrapper" id="tree-wrapper">
+        <svg class="graph" id="tree">
+          <g transform="translate(10,20)">
+            <g class="links"></g>
+            <g class="nodes"></g>
+          </g>
+        </svg>
+        
+      </div>
+
+      <div class="wrapper" id="cluster-wrapper">
+        <svg class="graph" id="cluster">
+          <g transform="translate(10,20)">
+            <g class="links"></g>
+            <g class="nodes"></g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="wrapper" id="map-wrapper">
+        <svg class="graph" id="map">
+          <g transform="translate(0,10)">
+          </g>
+        </svg>
+      </div>
+
+      <div class="wrapper" id="pack-wrapper">
+        <svg class="graph" id="pack">
+          <g transform="translate(5,10)">
+          </g>
+        </svg>
+      </div>
+
+      <div class="wrapper" id="partition-wrapper">
+        <svg class="graph" id="partition">
+          <g transform="translate(5,10)">
+          </g>
+        </svg>
+      </div>
+      <div class="wrapper" id="sunburst-wrapper">
+        <svg class="graph" id="sunburst">
+          <g transform="translate(200,110)">
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <script src="{{url_for('static', filename='d3.min.js')}}"></script>
+  <script src="{{url_for('static', filename='script.js')}}"></script>
+</body>
+</html>
